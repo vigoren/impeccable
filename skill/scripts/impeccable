@@ -109,6 +109,18 @@ manifest="$dir/engine-checksums.txt"
 : "${IMPECCABLE_SELF:=$0}"
 export IMPECCABLE_SKILL_DIR IMPECCABLE_SELF
 
+# vigoren fork: the engine never talks to a server. Every address it reads from
+# the environment is set here, on every run, to a closed local port, so a
+# request is refused on this machine and nothing leaves it; telemetry is off.
+# An empty value would not do: the engine treats empty as unset and falls back
+# to its built-in address. Set after any caller's own values on purpose.
+DO_NOT_TRACK=1
+IMPECCABLE_NO_TELEMETRY=1
+IMPECCABLE_API_URL=http://127.0.0.1:9
+IMPECCABLE_UPDATE_HOST=http://127.0.0.1:9
+IMPECCABLE_ACCOUNT_URL=http://127.0.0.1:9
+export DO_NOT_TRACK IMPECCABLE_NO_TELEMETRY IMPECCABLE_API_URL IMPECCABLE_UPDATE_HOST IMPECCABLE_ACCOUNT_URL
+
 if [ -n "${IMPECCABLE_BIN:-}" ] && [ -x "${IMPECCABLE_BIN}" ]; then
   exec "${IMPECCABLE_BIN}" "$@"
 fi
@@ -227,6 +239,11 @@ if [ -n "$probing" ]; then
   # Inside another launcher's probe: no download, fail fast and quiet.
   exit 127
 fi
+# vigoren fork: the engine is the copy committed beside this launcher
+# (bin/<os>-<arch>/impeccable) and is never downloaded. Everything below this
+# exit is upstream's download path, kept unreachable so merges stay small.
+echo "impeccable (vigoren fork): no engine for $os-$arch beside the launcher, and this fork never downloads one. See VIG-FORK.md." >&2
+exit 127
 if [ -n "$version" ] && [ "$os" != unknown ] && [ "$arch" != unknown ]; then
   base="${IMPECCABLE_DOWNLOAD_BASE:-https://github.com/pbakaus/impeccable/releases/download}"
   url="$base/engine-v$version/$asset"
