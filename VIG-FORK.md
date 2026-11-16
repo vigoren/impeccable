@@ -22,6 +22,11 @@ changes below, and is the branch machines install the plugin from.
    It is upstream's release asset `impeccable-linux-x64` for engine 0.1.24, sha256
    `d317bd1be061fdc902c4dede7fdf1efd1f7744882fb511a1f962fcdc4eed5382`, the digest
    `engine-checksums.txt` pins. Every machine Dean runs is Linux x64.
+4. **The plugin declares no hooks.** `plugin/hooks/hooks.json` is empty, so nothing is scanned
+   at session start, after an edit or at the end of a turn. The detector runs only inside
+   design work, when the skill runs it (its context output asks for one run at the end where
+   no hook is wired). Dean, 2026-11-16: "it should only run when I'm doing design work".
+   Upstream's own tests of that file (`tests/hook-build.test.mjs`) are not expected to pass here.
 
 Not changed: the Windows launcher, the copies of the launcher under the other harness
 folders, and the engine's source. The engine still contains its network code; the launcher
@@ -37,7 +42,8 @@ the engine reads from the environment.
 
 1. Bring `main` up to upstream, and read what changed since the reviewed commit, above all in
    `crates/` (the engine) and `skill/scripts/impeccable` (the launcher).
-2. Merge `main` into `vig`. Keep the two launcher changes.
+2. Merge `main` into `vig`. Keep the two launcher changes, and keep `plugin/hooks/hooks.json`
+   empty.
 3. If `ENGINE_VERSION` moved: download `impeccable-linux-x64` for the new version from
    upstream's release, check it against `engine-checksums.txt`, and commit it over the old one.
 4. Run `sh plugin/skills/impeccable/scripts/impeccable engine-probe`: it must print the new
