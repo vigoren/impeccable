@@ -49,4 +49,13 @@ the engine reads from the environment.
 4. Run `sh plugin/skills/impeccable/scripts/impeccable engine-probe`: it must print the new
    version. Then repeat the `strace` check from item 1 above.
 
+## Getting a change on `vig` onto a machine
+
+A machine keeps its installed copy for as long as the plugin's version number stays the same,
+so a change here that leaves the version alone (item 4 was one) reaches a machine that already
+has the plugin only by a reinstall: `claude plugin marketplace update impeccable`, then
+`claude plugin uninstall impeccable@impeccable` and `claude plugin install impeccable@impeccable`,
+with the scope it was installed at. A project-scope reinstall reorders the keys in the
+project's `.claude/settings.json`; put the file back.
+
 Reviewed commit: `2b86d9c` (plugin 4.9.1, engine 0.1.24), 2026-11-15.
